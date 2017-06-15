@@ -1,0 +1,7 @@
+* Exercise2.1
+
+** 1. It takes about 7.396s.
+
+** 3. It takes about 4.076s, it still get correct answer.
+
+** 4. No. Because when just using a volatile field, it could just gurantee visibility without atomicity. There will be some errors in addAndGet.
