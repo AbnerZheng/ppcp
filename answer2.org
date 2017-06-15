@@ -9,3 +9,9 @@
 ** 5. It takes about 3.851s when using java.util.concurrent.atomic.AtomicInteger. Almost nothing changed, because I use a local variable 'count' to store the sum of factors which partially calculate and there is no need to declared it final.
 
 * Exercise2.2
+
+** 1. Because the cache will be accessed very frequently, intersected with reading and writing. So the visibility is important, and volatile can gurantee this property.
+
+** 2. In order to maintain immutable. Immutable object is naturelly thread-safe.
+
+* Exercise2.3

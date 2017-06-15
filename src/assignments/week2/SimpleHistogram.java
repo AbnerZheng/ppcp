@@ -1,13 +1,28 @@
 package assignments.week2;// For week 2
 // sestoft@itu.dk * 2014-09-04
 
+import javax.annotation.concurrent.ThreadSafe;
+
 class SimpleHistogram {
-  public static void main(String[] args) {
-    final Histogram histogram = new Histogram1(30);
-    histogram.increment(7);
-    histogram.increment(13);
-    histogram.increment(7);
-    dump(histogram);
+  public static void main(String[] args) throws InterruptedException {
+    final Histogram histogram = new Histogram2(30);
+
+      Thread thread = new Thread(()->{
+          for (int i = 0; i < 100000; i++) {
+              histogram.increment(10);
+          }
+      });
+      Thread thread1 = new Thread(() -> {
+          for (int i = 0; i < 100000; i++) {
+              histogram.increment(10);
+          }
+      });
+      thread.start();
+      thread1.start();
+
+      thread.join();
+      thread1.join();
+      dump(histogram);
   }
 
   public static void dump(Histogram histogram) {
@@ -37,6 +52,30 @@ class Histogram1 implements Histogram {
   public int getCount(int bin) {
     return counts[bin];
   }
+  public int getSpan() {
+    return counts.length;
+  }
+}
+
+@ThreadSafe
+class Histogram2 implements Histogram{
+  private final int[] counts;
+
+  Histogram2(int span) {
+    this.counts = new int[span];
+  }
+
+  @Override
+  public synchronized void increment(int bin) {
+    counts[bin]++;
+  }
+
+  @Override
+  public synchronized int getCount(int bin) {
+    return counts[bin];
+  }
+
+  @Override
   public int getSpan() {
     return counts.length;
   }
