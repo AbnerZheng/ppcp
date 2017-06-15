@@ -2,6 +2,8 @@ package assignments.week2;
 // For week 2
 // sestoft@itu.dk * 2014-08-29
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 class MyAtomicInteger{
     private int count = 0;
     public synchronized int addAndGet(int amount){
@@ -21,12 +23,13 @@ class TestCountFactors {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         int count = 0;
-        MyAtomicInteger myAtomicInteger = new MyAtomicInteger();
+//        MyAtomicInteger myAtomicInteger = new MyAtomicInteger();
+        final AtomicInteger atomicInteger = new AtomicInteger();
         Thread[] threads = new Thread[NTHREAD];
         for (int i = 0; i < NTHREAD; i++){
             final int ii = i;
             threads[i] = new Thread(()->{
-                myAtomicInteger.addAndGet(addPart(ii));
+                atomicInteger.addAndGet(addPart(ii));
             });
             threads[i].start();
         }
@@ -40,7 +43,7 @@ class TestCountFactors {
         }
 
         long end = System.currentTimeMillis();
-        System.out.printf("Total number of factors is %9d%n", myAtomicInteger.get());
+        System.out.printf("Total number of factors is %9d%n", atomicInteger.get());
         System.out.printf("Total time %d\n",end - start); // sequential: 7396
     }
 

@@ -5,3 +5,7 @@
 ** 3. It takes about 4.076s, it still get correct answer.
 
 ** 4. No. Because when just using a volatile field, it could just gurantee visibility without atomicity. There will be some errors in addAndGet.
+
+** 5. It takes about 3.851s when using java.util.concurrent.atomic.AtomicInteger. Almost nothing changed, because I use a local variable 'count' to store the sum of factors which partially calculate and there is no need to declared it final.
+
+* Exercise2.2
