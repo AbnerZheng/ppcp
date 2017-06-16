@@ -28,7 +28,7 @@ public class TestCountPrimes {
     long count = 0;
     final int from = 0, to = range;
     for (int i=from; i<to; i++)
-      if (isPrime(i)) 
+      if (isPrime(i))
         count++;
     return count;
   }
@@ -59,18 +59,18 @@ public class TestCountPrimes {
     final LongCounter lc = new LongCounter();
     Thread[] threads = new Thread[threadCount];
     for (int t=0; t<threadCount; t++) {
-      final int from = perThread * t, 
-        to = (t+1==threadCount) ? range : perThread * (t+1); 
+      final int from = perThread * t,
+        to = (t+1==threadCount) ? range : perThread * (t+1);
       threads[t] = new Thread(() -> {
         for (int i=from; i<to; i++)
           if (isPrime(i))
             lc.increment();
       });
     }
-    for (int t=0; t<threadCount; t++) 
+    for (int t=0; t<threadCount; t++)
       threads[t].start();
     try {
-      for (int t=0; t<threadCount; t++) 
+      for (int t=0; t<threadCount; t++)
         threads[t].join();
     } catch (InterruptedException exn) { }
     return lc.get();

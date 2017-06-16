@@ -15,3 +15,33 @@
 ** 2. In order to maintain immutable. Immutable object is naturelly thread-safe.
 
 * Exercise2.3
+
+** 1. Counts should be `final`. The method `increase` should be `synchronized`.
+
+304057ms :
+ 0:     41540
+   1:       186
+   2:    150784
+   3:    191810
+   4:     97676
+   5:     17312
+   6:       692
+   7:         0
+   8:         0
+   9:         0
+  10:         0
+  11:         0
+  12:         0
+  13:         0
+  14:         0
+  15:         0
+  16:         0
+  17:         0
+  18:         0
+  19:         0
+  20:         0
+  21:         0
+  22:         0
+  23:         0
+  24:         0
+         500000
