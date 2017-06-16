@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 public class Exercise3_2 {
 
-    final static int N = 100_000_001;
+    final static int N = 10_000_001;
 
     public static void main(String[] args) {
         int[] a = new int[N];
@@ -23,7 +23,7 @@ public class Exercise3_2 {
         assert a[N-1] == 664_579;
 
         for (int i = 0; i < 10; i++) {
-            int i1 = N / 10 * i;
+            int i1 = N / 10 * i + 1;
             System.out.println(a[i1] * Math.log(i1)/ i1);
         }
     }
