@@ -1,10 +1,7 @@
 package assignments.week3;// Example 154 from page 123 of Java Precisely third edition (The MIT Press 2016)
 // Author: Peter Sestoft (sestoft@itu.dk)
 
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 class Example154 {
     public static void main(String[] args) {
@@ -50,8 +47,16 @@ class Example154 {
         FunList<FunList<Integer>> finalListFunList = cons(list1, cons(list2, cons(list3, listFunList)));
         FunList<Integer> flatten = FunList.flatten(finalListFunList);
         FunList<Integer> flattenFun= FunList.flattenFun(finalListFunList);
+        FunList<Object> objectFunList = finalListFunList.flatMapFun(x -> {
+            return new FunList<>(new FunList.Node<>(0, new FunList.Node<>(x, null)));
+        });
+
         System.out.println(flatten);
         System.out.println(flattenFun);
+        System.out.println(objectFunList);
+
+        FunList<Integer> scan = flatten.scan((pre, cur) -> pre + cur);
+        System.out.println(scan);
     }
 
     public static <T> FunList<T> cons(T item, FunList<T> list) {
@@ -247,6 +252,30 @@ class FunList<T> {
             cur = cur.next;
         }
         return count;
+    }
+
+    public <U> FunList<U> flatMapFun(Function<T, FunList<U>> f){
+        return flatten(this.map(f));
+    }
+
+    public FunList<T> scan(BinaryOperator<T> f){
+        Node<T> temp = this.first;
+        if(temp == null){
+            return new FunList<>(null);
+        }
+        FunList<T> tFunList = new FunList<>(null);
+        boolean first = true;
+        while(temp != null){
+            if(first){
+                tFunList = cons(temp.item, tFunList);
+                first = false;
+            }else{
+                T apply = f.apply(tFunList.first.item, temp.item);
+                tFunList = cons(apply, tFunList);
+            }
+            temp = temp.next;
+        }
+        return tFunList.reverse();
     }
 
     @Override
