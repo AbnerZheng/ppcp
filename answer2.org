@@ -14,34 +14,17 @@
 
 ** 2. In order to maintain immutable. Immutable object is naturelly thread-safe.
 
+
 * Exercise2.3
 
 ** 1. Counts should be `final`. The method `increase` should be `synchronized`.
+** 3.
 
-304057ms :
- 0:     41540
-   1:       186
-   2:    150784
-   3:    191810
-   4:     97676
-   5:     17312
-   6:       692
-   7:         0
-   8:         0
-   9:         0
-  10:         0
-  11:         0
-  12:         0
-  13:         0
-  14:         0
-  15:         0
-  16:         0
-  17:         0
-  18:         0
-  19:         0
-  20:         0
-  21:         0
-  22:         0
-  23:         0
-  24:         0
-         500000
+* Exercise2.4
+
+** 2. 19,904 ms
+** 3. The times of the factorizer being called is 139692 and need 14,610 ms. Because it doesn't use a atomic computeIfAbsent function.
+** 4. Times: 116079, Running time: 12,199ms. Not atomic.
+** 5. Times: 115000, Time: 12,555ms. Because it use Future<V> as the value of the hashmap, and use putIfAbsent to gurantee the atomic of add Future<V>, so there must be one and only one Future<V> in the hashmap. So that the compute will only once.
+** 6. Times: 115000, Time: 11,534ms.
+** 7. Times: 115000, Time: 11,836ms. It's not responsive.
