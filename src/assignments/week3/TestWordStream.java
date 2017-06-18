@@ -94,6 +94,10 @@ public class TestWordStream {
       }
     });
 
+    System.out.println(letters("persistent"));
+    Stream<String> stream7 = Arrays.stream(strings);
+    Map<Map<Character, Integer>, List<String>> collect1 = stream7.collect(Collectors.groupingBy(x -> letters(x)));
+    System.out.println(collect1.size());
   }
 
   public static Stream<String> readWords(String filename) {
@@ -113,9 +117,17 @@ public class TestWordStream {
   public static Map<Character,Integer> letters(String s) {
     Map<Character,Integer> res = new TreeMap<>();
     // TO DO: Implement properly
-    s.chars().forEach(c->{
-//      res.computeIfPresent();
-    });
+    s.chars().forEach(c -> {
+          res.compute((char) c,
+              (key, value) -> {
+                if (value == null) {
+                  return 1;
+                } else {
+                  return value+1;
+                }
+              });
+        }
+    );
     return res;
   }
 }
