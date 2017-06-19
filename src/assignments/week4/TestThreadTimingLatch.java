@@ -1,4 +1,5 @@
-package assignments.week4;// For week 4
+package assignments.week4;
+// For week 4
 // sestoft@itu.dk * 2014-09-08
 
 import java.util.ArrayList;

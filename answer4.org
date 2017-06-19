@@ -1,0 +1,89 @@
+* 4.3
+** 1. # OS:   Mac OS X; 10.12.5; x86_64
+# JVM:  Oracle Corporation; 1.8.0_131
+# CPU:  null; 4 "cores"
+# Date: 2017-06-19T12:44:59+0800
+
+#+NAME: selfCountData
+| program            | thread | mean      |    sdev | count |
+|--------------------+--------+-----------+---------+-------|
+| countSequential    |      1 | 11617.2us | 1840.81 |    32 |
+| countParallelLocal |      1 | 14688.6us | 1493.79 |    16 |
+| countParallelLocal |      2 | 10236.3us | 1062.89 |    32 |
+| countParallelLocal |      3 | 8206.5us  |  964.39 |    64 |
+| countParallelLocal |      4 | 7417.3us  | 1021.23 |    64 |
+| countParallelLocal |      5 | 8868.4us  | 1655.07 |    32 |
+| countParallelLocal |      6 | 7221.7us  |  958.90 |    64 |
+| countParallelLocal |      7 | 6362.1us  |  482.64 |    64 |
+| countParallelLocal |      8 | 6097.2us  |  455.45 |    64 |
+| countParallelLocal |      9 | 7124.2us  |  386.99 |    64 |
+| countParallelLocal |     10 | 6488.7us  |  860.98 |    64 |
+| countParallelLocal |     11 | 6406.0us  |  805.94 |    64 |
+| countParallelLocal |     12 | 6466.7us  |  345.67 |    64 |
+| countParallelLocal |     13 | 6667.7us  | 1068.42 |    32 |
+| countParallelLocal |     14 | 6808.2us  |  493.80 |    64 |
+| countParallelLocal |     15 | 6795.5us  |  785.03 |    64 |
+| countParallelLocal |     16 | 6094.9us  |  528.25 |    64 |
+
+#+BEGIN_SRC python :var tbl_data=selfCountData filename="./selfCount.png" :results file
+  import numpy as np
+  import matplotlib
+  import matplotlib.pyplot as plt
+
+  plt.style.use('ggplot')
+
+  thread_data = tbl_data[1:]
+
+  x = [row[1] for row in thread_data]
+  y = [float(row[2][:-2]) for row in thread_data]
+
+  plt.scatter(x,y)
+
+  plt.savefig(filename)
+  return filename
+#+END_SRC
+
+#+RESULTS:
+[[file:./selfCount.png]]
+
+#+NAME: atomicCountData
+| program            | #thread | mean      |    sdev | count |
+|--------------------+---------+-----------+---------+-------|
+| countSequential    |       1 | 15697.3us | 1848.61 |    32 |
+| countParallelLocal |       1 | 14986.6us | 1306.09 |    16 |
+| countParallelLocal |       2 | 8977.4us  |  607.03 |    32 |
+| countParallelLocal |       3 | 8341.6us  | 1478.48 |    32 |
+| countParallelLocal |       4 | 6764.5us  |  488.68 |    64 |
+| countParallelLocal |       5 | 6784.4us  |  181.56 |    64 |
+| countParallelLocal |       6 | 7120.1us  |  992.10 |    32 |
+| countParallelLocal |       7 | 6422.6us  |  407.61 |    64 |
+| countParallelLocal |       8 | 6402.7us  |  542.33 |    64 |
+| countParallelLocal |       9 | 7458.4us  |  992.83 |    64 |
+| countParallelLocal |      10 | 6645.0us  |  669.41 |    64 |
+| countParallelLocal |      11 | 7376.7us  |  510.47 |    64 |
+| countParallelLocal |      12 | 7998.1us  |  823.56 |    32 |
+| countParallelLocal |      13 | 7900.3us  |  478.98 |    64 |
+| countParallelLocal |      14 | 7718.9us  |  570.46 |    64 |
+| countParallelLocal |      15 | 7661.5us  | 1236.03 |    32 |
+| countParallelLocal |      16 | 7060.8us  |  715.67 |    64 |
+
+#+BEGIN_SRC python :var tbl_data=atomicCountData filename="./atomicLongCount.png" :results file
+  import numpy as np
+  import matplotlib
+  import matplotlib.pyplot as plt
+
+  plt.style.use('ggplot')
+
+  thread_data = tbl_data[1:]
+
+  x = [row[1] for row in thread_data]
+  y = [float(row[2][:-2]) for row in thread_data]
+
+  plt.scatter(x,y)
+
+  plt.savefig(filename)
+  return filename
+#+END_SRC
+
+#+RESULTS:
+[[file:./atomicLongCount.png]]
