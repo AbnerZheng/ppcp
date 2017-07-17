@@ -5,18 +5,18 @@ package assignments.week5;// A Java 8 streams (non-concurrent) version of the co
 // A pipeline of transformers connected by streams.  
 
 // This is illustrated by generating URLs, fetching the corresponding
-// webpages, scanning the pages for links to other pages, and printing
-// those links; using four threads connected by three streams:
+// Webpage2s, scanning the pages for Link2s to other pages, and printing
+// those Link2s; using four threads connected by three streams:
 
 // UrlProducer --(Stream<String>)--> 
-// PageGetter  --(Stream<Webpage>)--> 
-// LinkScanner --(Stream<Link>)--> 
-// LinkPrinter
+// PageGetter  --(Stream<Webpage2>)--> 
+// Link2Scanner --(Stream<Link2>)--> 
+// Link2Printer
 
 // For streams
 import java.util.stream.Stream;
 
-// For reading webpages
+// For reading Webpage2s
 import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -31,11 +31,11 @@ public class TestStreams {
   public static void main(String[] args) throws IOException {
     Stream<String> urlStream 
       = Stream.of(urls); //.parallel();
-    Stream<Webpage> pageStream 
-      = urlStream.flatMap(url -> makeWebPageOrNone(url, 200));
-    Stream<Link> linkStream 
-      = pageStream.flatMap(page -> makeLinks(page));
-    linkStream.forEach(link -> System.out.printf("%s links to %s%n", link.from, link.to));
+    Stream<Webpage2> pageStream 
+      = urlStream.flatMap(url -> makeWebpage2OrNone(url, 200));
+    Stream<Link2> Link2Stream 
+      = pageStream.flatMap(page -> makeLink2s(page));
+    Link2Stream.forEach(Link2 -> System.out.printf("%s Link2s to %s%n", Link2.from, Link2.to));
   }
 
   private static final String[] urls = 
@@ -45,8 +45,8 @@ public class TestStreams {
     "http://www.ing.dk", "http://www.dtu.dk", "http://www.bbc.co.uk"
   };
 
-  private static Stream<Webpage> makeWebPageOrNone(String url, int maxLines) {
-    try { return Stream.of(new Webpage(url, getPage(url, maxLines))); }
+  private static Stream<Webpage2> makeWebpage2OrNone(String url, int maxLines) {
+    try { return Stream.of(new Webpage2(url, getPage(url, maxLines))); }
     catch (IOException exn) {
       System.out.println(exn); 
       return Stream.empty();
@@ -72,28 +72,28 @@ public class TestStreams {
   private final static Pattern urlPattern 
     = Pattern.compile("a href=\"(\\p{Graph}*)\"");
 
-  private static Stream<Link> makeLinks(Webpage page) {
-    final Stream.Builder<Link> builder = Stream.builder();
+  private static Stream<Link2> makeLink2s(Webpage2 page) {
+    final Stream.Builder<Link2> builder = Stream.builder();
     final Matcher urlMatcher = urlPattern.matcher(page.contents);
     while (urlMatcher.find()) {
-      String link = urlMatcher.group(1);
-      builder.accept(new Link(page.url, link));
+      String Link2 = urlMatcher.group(1);
+      builder.accept(new Link2(page.url, Link2));
     }
     return builder.build();
   }
 }
 
-class Webpage {
+class Webpage2 {
   public final String url, contents;
-  public Webpage(String url, String contents) {
+  public Webpage2(String url, String contents) {
     this.url = url;
     this.contents = contents;
   }
 }
 
-class Link {
+class Link2 {
   public final String from, to;
-  public Link(String from, String to) {
+  public Link2(String from, String to) {
     this.from = from;
     this.to = to;
   }
@@ -104,7 +104,7 @@ class Link {
   }
 
   public boolean equals(Object obj) {
-    Link that = obj instanceof Link ? (Link)obj : null;
+    Link2 that = obj instanceof Link2 ? (Link2)obj : null;
     return that != null 
       && (from == null ? that.from == null : from.equals(that.from))
       && (to == null ? that.to == null : to.equals(that.to));

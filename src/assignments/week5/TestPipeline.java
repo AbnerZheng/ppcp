@@ -16,30 +16,73 @@ package assignments.week5;// For week 5
 
 
 // For reading webpages
+import sun.jvm.hotspot.opto.Block;
+
 import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
 // For regular expressions
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
-import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public class TestPipeline {
+  private static ExecutorService executors = Executors.newWorkStealingPool(8);
   public static void main(String[] args) {
     runAsThreads();
   }
 
   private static void runAsThreads() {
-    final BlockingQueue<String> urls = new OneItemQueue<String>();
-    final BlockingQueue<Webpage> pages = new OneItemQueue<Webpage>();
-    final BlockingQueue<Link> refPairs = new OneItemQueue<Link>();
-    Thread t1 = new Thread(new UrlProducer(urls));
-    Thread t2 = new Thread(new PageGetter(urls, pages));
-    Thread t3 = new Thread(new LinkScanner(pages, refPairs));
-    Thread t4 = new Thread(new LinkPrinter(refPairs));
-    t1.start(); t2.start(); t3.start(); t4.start(); 
+    List<Future<?>> futures = new ArrayList<>();
+    final BlockingQueue<String> urls = new OneItemQueue<>();
+    final BlockingQueue<Webpage> pages = new OneItemQueue<>();
+    final BlockingQueue<Link> refPairs = new OneItemQueue<>();
+    final BlockingQueue<Link> filterRefPairs = new OneItemQueue<>();
+    futures.add(executors.submit(new UrlProducer(urls)));
+    futures.add(executors.submit(new PageGetter(urls, pages)));
+    futures.add(executors.submit(new LinkScanner(pages, refPairs)));
+    futures.add(executors.submit(new Uniquifier<>(refPairs, filterRefPairs)));
+    futures.add(executors.submit(new LinkPrinter(filterRefPairs)));
+
+    for (Future<?> future : futures) {
+      try {
+        future.get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+    }
+
+  }
+}
+
+class Uniquifier<T> implements Runnable {
+  private final BlockingQueue<T> output;
+  private final BlockingQueue<T> input;
+  private final HashSet<T> hashSet;
+  public Uniquifier(BlockingQueue<T> input, BlockingQueue<T> output){
+    this.input = input;
+    this.output = output;
+    hashSet = new HashSet<T>();
+  }
+  @Override
+  public void run() {
+    while(true) {
+      T take = input.take();
+      if (!hashSet.contains(take)) {
+        hashSet.add(take);
+        output.put(take);
+      }
+    }
   }
 }
 
@@ -51,8 +94,10 @@ class UrlProducer implements Runnable {
   }
 
   public void run() { 
-    for (int i=0; i<urls.length; i++)
+    for (int i=0; i<urls.length; i++) {
+      System.out.printf("url produce %s.\n", urls[i]);
       output.put(urls[i]);
+    }
   }
 
   private static final String[] urls = 
@@ -75,7 +120,7 @@ class PageGetter implements Runnable {
   public void run() { 
     while (true) {
       String url = input.take();
-      //      System.out.println("PageGetter: " + url);
+            System.out.println("PageGetter: " + url);
       try { 
         String contents = getPage(url, 200);
         output.put(new Webpage(url, contents));
@@ -116,11 +161,12 @@ class LinkScanner implements Runnable {
   public void run() { 
     while (true) {
       Webpage page = input.take();
-      //      System.out.println("LinkScanner: " + page.url);
+      System.out.println("LinkScanner: " + page.url);
       // Extract links from the page's <a href="..."> anchors
       Matcher urlMatcher = urlPattern.matcher(page.contents);
       while (urlMatcher.find()) {
         String link = urlMatcher.group(1);
+        System.out.printf("Link Match %s\n", link);
         output.put(new Link(page.url, link));
       }
     }
@@ -137,7 +183,7 @@ class LinkPrinter implements Runnable {
   public void run() { 
     while (true) {
       Link link = input.take();
-      //      System.out.println("LinkPrinter: " + link.from);
+      System.out.println("LinkPrinter: " + link.from);
       System.out.printf("%s links to %s%n", link.from, link.to);
     }
   }
